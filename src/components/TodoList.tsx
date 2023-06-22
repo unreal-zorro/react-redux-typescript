@@ -2,32 +2,44 @@ import React, {useEffect, useState} from 'react';
 import {useTypesSelector} from "../hooks/useTypesSelector";
 import {useActions} from "../hooks/useActions";
 
-const TodoList: React.FC = () => {
-  const {page, error, loading, todos, limit} = useTypesSelector(state => state.todo);
-  const {fetchTodos, setTodoPage, setTodoLimit} = useActions();
-  const [pages, setPages] = useState(
-    (new Array(Math.round(200 / limit))).fill(1).map((a, i) => i + 1)
-  );
-  const [limitTodos, setLimitTodos] = useState(10);
+const maxLimitLength = 200;
 
-  const limitChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.round(Number(event.target.value));
-    if (value > 200) {
-      setTodoLimit(200);
-      setLimitTodos(200);
-      setTodoPage(1);
-      setPages([1]);
-    } else if (value < 1) {
-      setTodoLimit(1);
-      setLimitTodos(1);
-      setTodoPage(1);
-      setPages((new Array(200)).fill(1).map((a, i) => i + 1));
-    } else {
-      setTodoLimit(value);
-      setLimitTodos(value);
-      setTodoPage(1);
-      setPages((new Array(Math.ceil(200 / value))).fill(1).map((a, i) => i + 1))
-    }
+const TodoList: React.FC = () => {
+  const {
+    page,
+    error,
+    loading,
+    todos,
+    limit
+  } = useTypesSelector(state => state.todo);
+
+  const {
+    fetchTodos,
+    setTodoPage,
+    setTodoLimit
+  } = useActions();
+
+  const [pages, setPages] = useState(
+    (new Array(Math.ceil(maxLimitLength / limit))).fill(1).map((a, i) => i + 1)
+  );
+
+  const [limitTodos, setLimitTodos] = useState("10");
+
+  const limits = [1, 5, 10, 20, 50, 100, 200, 500, 1000].filter(n => n <= maxLimitLength);
+  if(!limits.includes(maxLimitLength)) {
+    limits.push(maxLimitLength);
+  }
+
+  const limitChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setTodoLimit(Number(value));
+    setLimitTodos(value);
+    setTodoPage(1);
+    setPages(
+      (new Array(Math.ceil(maxLimitLength / Number(value))))
+        .fill(1)
+        .map((a, i) => i + 1)
+    );
   };
 
   useEffect(() => {
@@ -53,14 +65,16 @@ const TodoList: React.FC = () => {
             : <div>
                 <div style={{marginBottom: 10}}>
                   <span>Отображать дела по:&nbsp;</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="200"
+                  <select
                     value={limitTodos}
                     onChange={(event) => limitChangeHandler(event)}
-                    style={{width: 50}}
-                  />
+                  >
+                    {limits.map(val => {
+                      return (
+                        <option value={val}>{val}</option>
+                      );
+                    })}
+                  </select>
                   <span>&nbsp;на странице.</span>
                 </div>
                 {todos.map(todo => {
