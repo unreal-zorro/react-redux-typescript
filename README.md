@@ -11,3 +11,5 @@
 ## Установка зависимостей
 
 ### `npm i redux redux-thunk react-redux @types/react-redux axios`
+
+### `npm i -D @babel/plugin-proposal-private-property-in-object`

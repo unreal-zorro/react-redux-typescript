@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useTypesSelector} from "../hooks/useTypesSelector";
 import {useActions} from "../hooks/useActions";
 
-const maxLimitLength = 200;
+const maxLimitLength = 200; // Max length of todos
 
 const TodoList: React.FC = () => {
   const {
@@ -63,24 +63,30 @@ const TodoList: React.FC = () => {
           : error
             ? <h2>{error}</h2>
             : <div>
-                <div style={{marginBottom: 10}}>
+                <div style={{marginBottom: 10, fontWeight: 900}}>
                   <span>Отображать дела по:&nbsp;</span>
+
                   <select
                     value={limitTodos}
                     onChange={(event) => limitChangeHandler(event)}
+                    style={{fontWeight: 900, paddingLeft: 5, paddingRight: 5}}
                   >
                     {limits.map(val => {
                       return (
-                        <option value={val}>{val}</option>
+                        <option key={val} value={val}>{val}</option>
                       );
                     })}
                   </select>
+
                   <span>&nbsp;на странице.</span>
                 </div>
+
                 {todos.map(todo => {
                   return (<div key={todo.id}>{todo.id} - {todo.title}</div>);
                 })}
+
                 <h3>Страницы с делами:</h3>
+
                 <div style={{display: "flex", flexWrap: "wrap"}}>
                   {pages.map(p => {
                     return (
